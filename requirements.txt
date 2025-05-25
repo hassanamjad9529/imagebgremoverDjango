@@ -3,4 +3,6 @@ djangorestframework
 rembg
 onnxruntime
 Pillow
+whitenoise
 requests
+gunicorn
