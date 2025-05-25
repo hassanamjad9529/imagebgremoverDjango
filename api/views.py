@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,6 +7,7 @@ from PIL import Image
 import io
 import base64
 import requests
+import traceback
 
 IMGBB_API_KEY = '88a44a310032eb395b35940653283f59'  # Replace this with your actual key
 
@@ -47,6 +47,7 @@ class RemoveBackgroundAPIView(APIView):
                         "image_url": image_url
                     }, status=status.HTTP_200_OK)
                 else:
+                    print("ImgBB upload failed:", response.text)
                     return Response({
                         "status": "error",
                         "message": "Failed to upload image to ImgBB",
@@ -54,10 +55,12 @@ class RemoveBackgroundAPIView(APIView):
                     }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             except Exception as e:
+                print("Exception in RemoveBackgroundAPIView:", traceback.format_exc())
                 return Response({
                     "status": "error",
                     "message": "Image processing failed",
                     "details": str(e)
-                }, status=status.HTTP_400_BAD_REQUEST)
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        print("Serializer errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
